@@ -1,6 +1,53 @@
 version: 2
 updates:
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: 'daily'
+      interval: "weekly"
+    labels:
+      - "github_actions"
+      - "dependencies"
+    assignees:
+      - "thomasvincent"
+    reviewers:
+      - "thomasvincent"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
+
+  # Maintain dependencies for Ruby gems
+  - package-ecosystem: "bundler"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      # Allow both direct and indirect updates for all packages
+      - dependency-type: "all"
+    labels:
+      - "ruby"
+      - "dependencies"
+    assignees:
+      - "thomasvincent"
+    reviewers:
+      - "thomasvincent"
+    commit-message:
+      prefix: "bundler"
+      include: "scope"
+    versioning-strategy: auto
+
+  # Maintain dependencies for Berkshelf
+  - package-ecosystem: "chef"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "chef"
+      - "dependencies"
+    assignees:
+      - "thomasvincent"
+    reviewers:
+      - "thomasvincent"
+    commit-message:
+      prefix: "chef"
+      include: "scope"

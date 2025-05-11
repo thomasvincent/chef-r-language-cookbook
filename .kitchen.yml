@@ -5,7 +5,7 @@ driver:
 provisioner:
   name: chef_zero
   product_name: chef
-  product_version: 18
+  product_version: 16
   multiple_converge: 2
   enforce_idempotency: true
   deprecations_as_errors: true

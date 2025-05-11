@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - name: Run Cookstyle
+      run: bundle exec cookstyle
+
+  unit:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - name: Run unit tests
+      run: bundle exec rspec
+
+  kitchen:
+    needs: unit
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: ['ubuntu-20.04', 'ubuntu-22.04']
+        suite: ['default', 'packages']
+      fail-fast: false
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - name: Install Chef
+      run: |
+        gem install chef-cli -v 16.18
+    - name: Run Test Kitchen
+      run: |
+        bundle exec kitchen test ${{ matrix.suite }}-${{ matrix.os }}
