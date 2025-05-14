@@ -1,9 +1,14 @@
 ---
 driver:
-  name: vagrant
+  name: docker
+  use_sudo: false
+  privileged: true
+  provision_command:
+    - systemctl enable sshd || true
 
 provisioner:
-  name: chef_zero
+  name: chef_infra
+  chef_license: accept
   product_name: chef
   product_version: 16
   multiple_converge: 2
@@ -15,10 +20,17 @@ verifier:
 
 platforms:
   - name: ubuntu-20.04
+    driver_config:
+      run_command: /usr/lib/systemd/systemd
   - name: ubuntu-22.04
-  - name: centos-7
-  - name: centos-stream-8
+    driver_config:
+      run_command: /usr/lib/systemd/systemd
   - name: debian-11
+    driver_config:
+      run_command: /usr/lib/systemd/systemd
+  - name: centos-stream-8
+    driver_config:
+      run_command: /usr/lib/systemd/systemd
 
 suites:
   - name: default
