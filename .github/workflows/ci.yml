@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -38,23 +38,28 @@ jobs:
 
   kitchen:
     needs: unit
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: ['ubuntu-20.04', 'ubuntu-22.04']
+        os: ['ubuntu-22.04', 'debian-11']
         suite: ['default', 'packages']
       fail-fast: false
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.1'
         bundler-cache: true
     - name: Install Chef
-      run: |
-        gem install chef-cli -v 16.18
-    - name: Run Test Kitchen
-      run: |
-        bundle exec kitchen test ${{ matrix.suite }}-${{ matrix.os }}
+      uses: actionshub/chef-install@main
+      with:
+        channel: stable
+        version: 16
+    - name: Test Kitchen
+      uses: actionshub/test-kitchen@main
+      with:
+        suite: ${{ matrix.suite }}
+        os: ${{ matrix.os }}
+        driver: docker
